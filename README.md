@@ -1,6 +1,6 @@
 # NewsWave
 
-This project holds the source code of the USA Reference application.
+This project holds the source code of the NewsWave application.
 
 ### Technical Stack
 
