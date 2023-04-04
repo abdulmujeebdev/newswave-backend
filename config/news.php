@@ -10,8 +10,16 @@ return [
         'newyork_times' => [
             'name' => 'Newyork Times',
             'url' => 'https://api.nytimes.com/svc/',
-            'key' => env('NEWYORK_TIMES_API_KEY'),
+            'api_key' => env('NEWYORK_TIMES_API_KEY'),
             'secret' => env('NEWYORK_TIMES_API_SECRET'),
         ],
-    ]
+        'the_guardians' => [
+            'name' => 'Newyork Times',
+            'url' => 'https://content.guardianapis.com/',
+            'api_key' => env('THE_GUARDIANS_API_KEY'),
+            'secret' => env('NEWYORK_TIMES_API_SECRET'),
+        ],
+    ],
+
+    'categories' => ['science', 'politics', 'sports', 'business', 'health', 'technology']
 ];

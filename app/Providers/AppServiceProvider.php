@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Interfaces\NewsInterface;
+use App\Services\NewsApiService;
+use App\Services\NewYorkTimesApiService;
+use App\Services\TheGuardiansApiService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(NewsInterface::class, NewsApiService::class);
+        $this->app->bind(NewsInterface::class, NewYorkTimesApiService::class);
+        $this->app->bind(NewsInterface::class, TheGuardiansApiService::class);
     }
 
     /**

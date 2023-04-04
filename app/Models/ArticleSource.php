@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Source extends Model
+class ArticleSource extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = ['id'];
-    public $timestamps = null;
+    public $timestamps = true;
+
+    protected $fillable = [
+        'name'
+    ];
 }

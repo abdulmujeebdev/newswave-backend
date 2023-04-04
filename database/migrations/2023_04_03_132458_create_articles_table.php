@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('image')->nullable();
-            $table->string('url');
-            $table->foreignId('category_id')->constrained('categories');
-            $table->foreignId('source_id')->constrained('sources');
+            $table->longText('url');
+            $table->foreignId('category_id')->constrained('article_categories');
+            $table->foreignId('source_id')->constrained('article_sources');
+            $table->foreignId('author_id')->constrained('article_authors');
             $table->text('short_description')->nullable();
             $table->longText('description')->nullable();
             $table->timestamp('published_at')->nullable();

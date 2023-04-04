@@ -5,7 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ArticleAuhor extends Model
+class ArticleAuthor extends Model
 {
     use HasFactory;
+    public $timestamps = true;
+
+    protected $fillable = [
+        'name'
+    ];
 }
