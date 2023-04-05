@@ -13,4 +13,8 @@ class ArticleCategory extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function userCategories() {
+        return $this->hasOne(UserCategories::class);
+    }
 }

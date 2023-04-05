@@ -15,4 +15,8 @@ class ArticleSource extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function userSources() {
+        return $this->hasOne(UserSources::class);
+    }
 }

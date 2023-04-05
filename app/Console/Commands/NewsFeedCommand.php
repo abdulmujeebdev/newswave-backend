@@ -3,8 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Services\NewsApiService;
+use App\Services\NewYorkTimesApiService;
+use App\Services\TheGuardiansApiService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 
 class NewsFeedCommand extends Command
 {
@@ -29,26 +30,27 @@ class NewsFeedCommand extends Command
      */
     public function handle()
     {
-        app()->call(NewsApiService::class . '@fetchNews');
+        $sources = config('news.sources');
 
-        // Newyork times
-//         $source = config('news.sources.newyork_times');
-//         $response = Http::get($source['url'] . '/search/v2/articlesearch.json', [
-//             'fq' => 'news_desk:(Sports)',
-//             'sort' => 'newest',
-//             'api-key' => $source['api_key'],
-//             'page_size' => 100,
-//         ]);
-//        $data = json_decode($response->getBody(), true);
-        //the Guardians
-//         $source = config('news.sources.the_guardians');
-//         $response = Http::get($source['url'] . '/search', [
-//             'show-fields' => 'thumbnail',
-//             'show-tags' => 'contributor',
-//             'q' => 'science',
-//             'api-key' => $source['api_key'],
-//             'page' => 1,
-//             'page-size' => 100,
-//         ]);
+        if (!empty($sources)) {
+            foreach ($sources as $key => $source) {
+                $this->info("Fetching " . $source['name'] . " Articles...");
+
+                if ($key != 'news_api') {
+                    sleep(60);
+                }
+
+                if ($key == 'news_api') {
+                    app()->call(NewsApiService::class . '@fetchNews');
+                } elseif ($key == 'newyork_times') {
+                    app()->call(NewYorkTimesApiService::class . '@fetchNews');
+                } elseif ($key == 'the_guardians') {
+                    app()->call(TheGuardiansApiService::class . '@fetchNews');
+                }
+
+                $this->info("Finished " . $source['name'] . " Articles");
+                $this->info("");
+            }
+        }
     }
 }

@@ -21,12 +21,14 @@ class NewsApiService implements NewsInterface {
 
         if (!empty($articleCategories)) {
             foreach ($articleCategories as $category) {
-                $response = Http::get('https://newsapi.org/v2/top-headlines', [
+                $response = Http::get($source['url'], [
                     'apiKey' => $source['api_key'],
                     'category' => $category->name
                 ]);
                 $data = json_decode($response->getBody(), true);
-                $result[$category->id] = $data['articles'];
+                if (array_key_exists('articles', $data)) {
+                    $result[$category->id] = $data['articles'];
+                }
             }
             $filteredArticles = $this->parseNews($result);
             $articles = $this->store($filteredArticles);
