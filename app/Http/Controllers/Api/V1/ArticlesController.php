@@ -7,6 +7,9 @@ use App\Models\Article;
 use App\Models\ArticleAuthor;
 use App\Models\ArticleCategory;
 use App\Models\ArticleSource;
+use App\Models\UserAuthors;
+use App\Models\UserCategories;
+use App\Models\UserSources;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,9 +18,20 @@ class ArticlesController extends Controller
 {
     public function index(Request $request)
     {
-        $authors = ArticleHelper::splitString($request->authors);
-        $sources = ArticleHelper::splitString($request->sources);
-        $categories = ArticleHelper::splitString($request->categories);
+        $user = auth()->user();
+
+        if ($user && @$request->is_user_preference == 'true') {
+            $authors = UserAuthors::where('user_id', $user->id)
+                ->pluck('author_id')->toArray();
+            $sources = UserSources::where('user_id', $user->id)
+                ->pluck('source_id')->toArray();
+            $categories = UserCategories::where('user_id', $user->id)
+                ->pluck('category_id')->toArray();
+        } else {
+            $authors = ArticleHelper::splitString($request->authors);
+            $sources = ArticleHelper::splitString($request->sources);
+            $categories = ArticleHelper::splitString($request->categories);
+        }
 
         $articles = Article::with(['author', 'source', 'category']);
 
