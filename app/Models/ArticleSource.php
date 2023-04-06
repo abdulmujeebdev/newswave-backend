@@ -17,6 +17,6 @@ class ArticleSource extends Model
     ];
 
     public function userSources() {
-        return $this->hasOne(UserSources::class);
+        return $this->belongsToMany(User::class, 'user_sources', 'source_id', 'user_id');
     }
 }

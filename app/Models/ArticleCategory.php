@@ -15,6 +15,6 @@ class ArticleCategory extends Model
     ];
 
     public function userCategories() {
-        return $this->hasOne(UserCategories::class);
+        return $this->belongsToMany(User::class, 'user_categories', 'category_id', 'user_id');
     }
 }

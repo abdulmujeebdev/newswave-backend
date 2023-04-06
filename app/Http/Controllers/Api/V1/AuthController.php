@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\LogoutRequest;
+use App\Http\Requests\UserRequest;
+use JWTAuth;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use LApp\Http\Requests\LoginRequest;
-use Illuminate\Http\Request;
-
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Requests\UpdateProfileRequest;
 
 class AuthController extends Controller
 {
@@ -35,7 +38,6 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'token' => $token,
-            'user' => auth()->user(),
             'message' => 'Logged in successfully.',
         ], Response::HTTP_OK);
     }
@@ -56,7 +58,7 @@ class AuthController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function logout(Request $request)
+    public function logout(LogoutRequest $request)
     {
         //valid credential
         $validator = Validator::make($request->only('token'), [
@@ -89,7 +91,7 @@ class AuthController extends Controller
         $user = JWTAuth::authenticate($requestData->token);
 
         $user->name = $requestData->name;
-        $user->password = $requestData->password;
+        $user->password = bcrypt($requestData->password);
         $user->save();
 
         return response()->json([
@@ -99,12 +101,8 @@ class AuthController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function get_user(Request $request)
+    public function get_user(UserRequest $request)
     {
-        $this->validate($request, [
-            'token' => 'required'
-        ]);
-
         $user = JWTAuth::authenticate($request->token);
 
         return response()->json(['user' => $user]);

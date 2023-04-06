@@ -24,7 +24,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('register', [AuthController::class, 'register']);
 
     Route::group(['middleware' => ['jwt.verify']], function() {
-        Route::get('logout', [AuthController::class, 'logout']);
+        Route::post('logout', [AuthController::class, 'logout']);
         Route::get('get_user', [AuthController::class, 'get_user']);
         Route::put('updateProfile', [AuthController::class, 'updateProfile']);
         Route::get('index', [ArticlesController::class, 'index']);

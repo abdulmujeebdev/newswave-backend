@@ -21,4 +21,17 @@ class Article extends Model
         'description',
         'published_at',
     ];
+
+    public function author() {
+        return $this->belongsTo(ArticleAuthor::class);
+    }
+
+    public function source() {
+        return $this->belongsTo(ArticleSource::class);
+    }
+
+    public function category() {
+        return $this->belongsTo(ArticleCategory::class);
+    }
+
 }

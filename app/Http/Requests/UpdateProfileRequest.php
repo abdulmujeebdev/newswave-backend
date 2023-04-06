@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProfileRequest extends FormRequest
+class UpdateProfileRequest extends APIRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,10 +12,7 @@ class UpdateProfileRequest extends FormRequest
      */
     public function authorize()
     {
-        return [
-            'name' => 'required|min:3|max:60',
-            'password' => 'required:min:8|max:30',
-        ];
+        return true;
     }
 
     /**
@@ -27,7 +23,8 @@ class UpdateProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|min:3|max:60',
+            'password' => 'required:min:8|max:30',
         ];
     }
 }

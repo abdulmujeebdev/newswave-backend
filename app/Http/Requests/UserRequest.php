@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-class LoginRequest extends APIRequest
+class UserRequest extends APIRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class LoginRequest extends APIRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|max:200',
-            'password' => 'required:min:8|max:30',
+            'token' => 'required',
         ];
     }
 }
