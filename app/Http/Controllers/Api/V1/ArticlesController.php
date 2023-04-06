@@ -51,8 +51,8 @@ class ArticlesController extends Controller
             $articles->where('published_at', $request->published_at);
         }
 
-        $articles->get();
-        
+        $articles = $articles->get();
+
         return response()->json([
             'success' => true,
             'articles' => $articles,
