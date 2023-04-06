@@ -51,7 +51,12 @@ class ArticlesController extends Controller
             $articles->where('published_at', $request->published_at);
         }
 
-        return $articles->get();
+        $articles->get();
+        
+        return response()->json([
+            'success' => true,
+            'articles' => $articles,
+        ], Response::HTTP_OK);
     }
     public function getAuthors() {
         $user = auth()->user();
