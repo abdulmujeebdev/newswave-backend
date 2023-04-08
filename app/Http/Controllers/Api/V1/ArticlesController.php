@@ -18,7 +18,7 @@ class ArticlesController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = request()->user();
 
         if ($user && @$request->is_user_preference == 'true') {
             $authors = UserAuthors::where('user_id', $user->id)
@@ -35,15 +35,15 @@ class ArticlesController extends Controller
 
         $articles = Article::with(['author', 'source', 'category']);
 
-        if (!empty($authors)) {
+        if ($authors) {
             $articles->whereIn('author_id', $authors);
         }
 
-        if (!empty($sources)) {
+        if ($sources) {
             $articles->whereIn('source_id', $sources);
         }
 
-        if (!empty($categories)) {
+        if ($categories) {
             $articles->whereIn('category_id', $categories);
         }
 
@@ -58,51 +58,19 @@ class ArticlesController extends Controller
             'articles' => $articles,
         ], Response::HTTP_OK);
     }
-    public function getAuthors() {
-        $user = auth()->user();
+    public function getFilters()
+    {
+        $data = [];
+        $data['authors'] = ArticleAuthor::paginate();
+        $data['sources'] = ArticleSource::all();
+        $data['categories'] = ArticleCategory::all();
 
-        $authors = ArticleAuthor::with(['userAuthors' => function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        }])
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'authors' => $authors,
-        ], Response::HTTP_OK);
+        return response()->json($data, Response::HTTP_OK);
     }
 
-    public function getSources() {
-        $user = auth()->user();
-
-        $sources = ArticleSource::with(['userSources' => function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        }])
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'authors' => $sources,
-        ], Response::HTTP_OK);
-    }
-
-    public function getCategories() {
-        $user = auth()->user();
-
-        $categories = ArticleCategory::with(['userCategories' => function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        }])
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'authors' => $categories,
-        ], Response::HTTP_OK);
-    }
-
-    public function saveUserPreferences(Request $request) {
-
-        $user = auth()->user();
+    public function saveUserPreferences(Request $request)
+    {
+        $user = request()->user();
         $authors = ArticleHelper::splitString($request->authors);
         $sources = ArticleHelper::splitString($request->sources);
         $categories = ArticleHelper::splitString($request->categories);

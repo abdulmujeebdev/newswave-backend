@@ -23,14 +23,13 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
 
+    Route::get('index', [ArticlesController::class, 'index']);
+    Route::get('aritcle/filters', [ArticlesController::class, 'getFilters']);
+
     Route::group(['middleware' => ['jwt.verify']], function() {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('get_user', [AuthController::class, 'get_user']);
         Route::put('updateProfile', [AuthController::class, 'updateProfile']);
-        Route::get('index', [ArticlesController::class, 'index']);
-        Route::get('getSources', [ArticlesController::class, 'getSources']);
-        Route::get('getAuthors', [ArticlesController::class, 'getAuthors']);
-        Route::get('getCategories', [ArticlesController::class, 'getCategories']);
         Route::post('saveUserPreferences', [ArticlesController::class, 'saveUserPreferences']);
     });
 });
