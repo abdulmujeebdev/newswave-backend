@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Source extends Model
+class UserSources extends Model
 {
     use HasFactory;
-    
-    protected $guarded = ['id'];
-    public $timestamps = null;
+
+    protected $fillable = [
+        'user_id',
+        'source_id'
+    ];
 }

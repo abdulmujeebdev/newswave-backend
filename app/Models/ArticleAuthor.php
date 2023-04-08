@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ArticleCategory extends Model
+class ArticleAuthor extends Model
 {
     use HasFactory;
     public $timestamps = true;
@@ -14,7 +14,7 @@ class ArticleCategory extends Model
         'name'
     ];
 
-    public function userCategories() {
-        return $this->belongsToMany(User::class, 'user_categories', 'category_id', 'user_id');
+    public function userAuthors() {
+        return $this->belongsToMany(User::class, 'user_authors', 'author_id', 'user_id');
     }
 }

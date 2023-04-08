@@ -16,3 +16,5 @@ This project holds the source code of the NewsWave application.
 -   Run `composer install`
 -   Run `php artisan key:generate`
 -   Run `php artisan migrate`
+-   Run `php artisan db:seed`
+-   Run `php artisan news:feed`

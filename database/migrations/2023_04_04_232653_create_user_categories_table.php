@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sources', function (Blueprint $table) {
+        Schema::create('user_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('api_key');
-            $table->string('api_secret')->nullable();
-            $table->string('url');
+            $table->integer('user_id');
+            $table->integer('category_id');
+            $table->timestamps();
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sources');
+        Schema::dropIfExists('user_categories');
     }
 };
