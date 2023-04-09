@@ -14,6 +14,8 @@ class RegisterRequest extends APIRequest
     }
     public function rules()
     {
+        logger(request()->all());
+
         return [
             'name' => 'required|min:3|max:60',
             'email' => [

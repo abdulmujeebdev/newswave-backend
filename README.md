@@ -1,6 +1,6 @@
-# NewsWave
+# News Wave
 
-This project holds the source code of the NewsWave application.
+This project holds the source code of the News Wave application.
 
 ### Technical Stack
 
@@ -11,8 +11,8 @@ This project holds the source code of the NewsWave application.
 ### Project Setup
 
 -   Clone the project
--   Run `cp .env.example .env`
--   Update your .env file
+- Run cp .env.example .env
+- Update your .env file
 -   Run `composer install`
 -   Run `php artisan key:generate`
 -   Run `php artisan migrate`

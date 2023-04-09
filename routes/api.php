@@ -24,7 +24,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('register', [AuthController::class, 'register']);
 
     Route::get('index', [ArticlesController::class, 'index']);
-    Route::get('aritcle/filters', [ArticlesController::class, 'getFilters']);
+    Route::get('article/filters', [ArticlesController::class, 'getFilters']);
 
     Route::group(['middleware' => ['jwt.verify']], function() {
         Route::post('logout', [AuthController::class, 'logout']);

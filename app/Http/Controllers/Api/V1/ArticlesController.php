@@ -2,82 +2,41 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Helpers\ArticleHelper;
-use App\Models\Article;
-use App\Models\ArticleAuthor;
-use App\Models\ArticleCategory;
-use App\Models\ArticleSource;
-use App\Models\UserAuthors;
-use App\Models\UserCategories;
-use App\Models\UserSources;
+use App\Interfaces\ArticleInterface;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ArticlesController extends Controller
 {
+    /**
+     * @var ArticleInterface
+     */
+    protected $articleInterface;
+    public function __construct(ArticleInterface $articleInterface)
+    {
+        $this->articleInterface = $articleInterface;
+    }
+
     public function index(Request $request)
     {
-        $user = request()->user();
-
-        if ($user && @$request->is_user_preference == 'true') {
-            $authors = UserAuthors::where('user_id', $user->id)
-                ->pluck('author_id')->toArray();
-            $sources = UserSources::where('user_id', $user->id)
-                ->pluck('source_id')->toArray();
-            $categories = UserCategories::where('user_id', $user->id)
-                ->pluck('category_id')->toArray();
-        } else {
-            $authors = ArticleHelper::splitString($request->authors);
-            $sources = ArticleHelper::splitString($request->sources);
-            $categories = ArticleHelper::splitString($request->categories);
-        }
-
-        $articles = Article::with(['author', 'source', 'category']);
-
-        if ($authors) {
-            $articles->whereIn('author_id', $authors);
-        }
-
-        if ($sources) {
-            $articles->whereIn('source_id', $sources);
-        }
-
-        if ($categories) {
-            $articles->whereIn('category_id', $categories);
-        }
-
-        if ($request->published_at) {
-            $articles->where('published_at', $request->published_at);
-        }
-
-        $articles = $articles->get();
+        $data = $this->articleInterface->getArticles($request);
 
         return response()->json([
             'success' => true,
-            'articles' => $articles,
+            'data' => $data,
         ], Response::HTTP_OK);
     }
     public function getFilters()
     {
-        $data = [];
-        $data['authors'] = ArticleAuthor::paginate();
-        $data['sources'] = ArticleSource::all();
-        $data['categories'] = ArticleCategory::all();
+        $data = $this->articleInterface->getFilters();
 
         return response()->json($data, Response::HTTP_OK);
     }
 
     public function saveUserPreferences(Request $request)
     {
-        $user = request()->user();
-        $authors = ArticleHelper::splitString($request->authors);
-        $sources = ArticleHelper::splitString($request->sources);
-        $categories = ArticleHelper::splitString($request->categories);
-
-        $user->authors()->sync($authors);
-        $user->sources()->sync($sources);
-        $user->categories()->sync($categories);
+        $this->articleInterface->saveUserPreferences($request);
 
         return response()->json([
             'success' => true,
