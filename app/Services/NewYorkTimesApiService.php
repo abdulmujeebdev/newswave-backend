@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\NewsInterface;
 use App\Models\Article;
+use App\Models\ArticleAPILastFetchDate;
 use App\Models\ArticleAuthor;
 use App\Models\ArticleCategory;
 use App\Models\ArticleSource;
@@ -18,6 +19,7 @@ class NewYorkTimesApiService implements NewsInterface {
         $articles = [];
         $source =  config('news.sources.newyork_times');
         $articleCategories = ArticleCategory::all();
+        $lastFetchedDate = ArticleAPILastFetchDate::where("name", 'new_york')->first();
 
         if (!empty($articleCategories)) {
             foreach ($articleCategories as $category) {
@@ -26,6 +28,8 @@ class NewYorkTimesApiService implements NewsInterface {
                     'sort' => 'newest',
                     'api-key' => $source['api_key'],
                     'page_size' => 20,
+                    'begin_date' => @$lastFetchedDate->last_published_date ?
+                        str_replace("-", "", $lastFetchedDate->last_published_date) : null
                 ]);
                 $data = json_decode($response->getBody(), true);
                 if (array_key_exists('response', $data)) {
@@ -89,6 +93,12 @@ class NewYorkTimesApiService implements NewsInterface {
     public function store($articles): array
     {
         Article::insert($articles);
+        ArticleAPILastFetchDate::updateOrCreate([
+            'name' => 'new_york'
+        ], [
+            'last_published_date' => Carbon::now()->format('Y-d-m h:i:s')
+        ]);
+
         return $articles;
     }
 }

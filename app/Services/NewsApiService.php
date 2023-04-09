@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\NewsInterface;
 use App\Models\Article;
+use App\Models\ArticleAPILastFetchDate;
 use App\Models\ArticleAuthor;
 use App\Models\ArticleCategory;
 use App\Models\ArticleSource;
@@ -18,18 +19,21 @@ class NewsApiService implements NewsInterface {
         $articles = [];
         $source = config('news.sources.news_api');
         $articleCategories = ArticleCategory::all();
+        $lastFetchedDate = ArticleAPILastFetchDate::where("name", 'news_api')->first();
 
         if (!empty($articleCategories)) {
             foreach ($articleCategories as $category) {
                 $response = Http::get($source['url'], [
                     'apiKey' => $source['api_key'],
-                    'category' => $category->name
+                    'category' => $category->name,
+                    'published_date' => @$lastFetchedDate->last_published_date ?? null
                 ]);
                 $data = json_decode($response->getBody(), true);
                 if (array_key_exists('articles', $data)) {
                     $result[$category->id] = $data['articles'];
                 }
             }
+
             $filteredArticles = $this->parseNews($result);
             $articles = $this->store($filteredArticles);
         }
@@ -84,6 +88,12 @@ class NewsApiService implements NewsInterface {
     public function store($articles): array
     {
         Article::insert($articles);
+        ArticleAPILastFetchDate::updateOrCreate([
+            'name' => 'news_api'
+        ], [
+            'last_published_date' => Carbon::now()->format('Y-d-m h:i:s')
+        ]);
+
         return $articles;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\NewsInterface;
 use App\Models\Article;
+use App\Models\ArticleAPILastFetchDate;
 use App\Models\ArticleAuthor;
 use App\Models\ArticleCategory;
 use App\Models\ArticleSource;
@@ -18,6 +19,7 @@ class TheGuardiansApiService implements NewsInterface {
         $articles = [];
         $source =  config('news.sources.the_guardians');
         $articleCategories = ArticleCategory::all();
+        $lastFetchedDate = ArticleAPILastFetchDate::where("name", 'the_guardians')->first();
 
         if (!empty($articleCategories)) {
             foreach ($articleCategories as $category) {
@@ -28,6 +30,7 @@ class TheGuardiansApiService implements NewsInterface {
                     'api-key' => $source['api_key'],
                     'page' => 1,
                     'page-size' => 20,
+                    'from' => @$lastFetchedDate->last_published_date ?? null
                 ]);
                 $data = json_decode($response->getBody(), true);
 
@@ -91,6 +94,12 @@ class TheGuardiansApiService implements NewsInterface {
     public function store($articles): array
     {
         Article::insert($articles);
+        ArticleAPILastFetchDate::updateOrCreate([
+            'name' => 'the_guardians'
+        ], [
+            'last_published_date' => Carbon::now()->format('Y-d-m h:i:s')
+        ]);
+
         return $articles;
     }
 }
