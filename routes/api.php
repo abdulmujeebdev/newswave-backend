@@ -28,7 +28,7 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::group(['middleware' => ['jwt.verify']], function() {
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('get_user', [AuthController::class, 'get_user']);
+        Route::get('auth/user', [AuthController::class, 'getUser']);
         Route::put('updateProfile', [AuthController::class, 'updateProfile']);
         Route::post('saveUserPreferences', [ArticlesController::class, 'saveUserPreferences']);
     });

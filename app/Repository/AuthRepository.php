@@ -6,29 +6,34 @@ use JWTAuth;
 use App\Models\User;
 use App\Interfaces\AuthInterface;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
-class AuthRepository implements AuthInterface {
-    public function login($request) {
+class AuthRepository implements AuthInterface
+{
+    public function login($request)
+    {
         $credentials = $request->only('email', 'password');
-
         try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json([
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return [
                     'success' => false,
                     'message' => 'Login credentials are invalid.',
-                ], 400);
+                    'code' => HttpResponse::HTTP_UNAUTHORIZED
+                ];
             }
         } catch (JWTException $e) {
-            return response()->json([
+            return [
                 'success' => false,
-                'message' => 'Could not create token.',
-            ], 500);
+                'message' => 'Authentication failed! Email or password is incorrect.',
+                'code' => HttpResponse::HTTP_UNAUTHORIZED
+            ];
         }
 
-        return $token;
+        return ['token' => $token, 'message' => __('Logged in successfully.')];
     }
 
-    public function register($request) {
+    public function register($request)
+    {
         return  User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -36,7 +41,8 @@ class AuthRepository implements AuthInterface {
         ]);
     }
 
-    public function updateProfile($request){
+    public function updateProfile($request)
+    {
         $user = JWTAuth::authenticate($request->token);
 
         $user->name = $request->name;
