@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Requests\LogoutRequest;
-use App\Http\Requests\UserRequest;
-use App\Interfaces\AuthInterface;
 use JWTAuth;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Response;
+use App\Interfaces\AuthInterface;
+use App\Http\Requests\UserRequest;
 use Illuminate\Routing\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\LogoutRequest;
 use App\Http\Requests\RegisterRequest;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\UpdateProfileRequest;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -26,15 +28,14 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $token = $this->authInterface->login($request);
+        $data = $this->authInterface->login($request);
 
-        //Token created, return with success response and jwt token
         return response()->json([
-            'success' => true,
-            'token' => $token,
-            'user' => auth()->user(),
-            'message' => 'Logged in successfully.',
-        ], Response::HTTP_OK);
+            'success' => Arr::get($data, 'success', true),
+            'token' => Arr::get($data, 'token'),
+            'user' => request()->user(),
+            'message' => Arr::get($data, 'message'),
+        ], Arr::get($data, 'code', Response::HTTP_OK));
     }
 
     public function register(RegisterRequest $request)
@@ -60,11 +61,11 @@ class AuthController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function get_user(UserRequest $request)
+    public function getUser()
     {
-        $user = JWTAuth::authenticate($request->token);
-
-        return response()->json(['data' => $user]);
+        return response()->json([
+            'data' => request()->user()
+        ]);
     }
 
 
