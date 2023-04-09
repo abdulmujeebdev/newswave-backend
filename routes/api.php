@@ -26,11 +26,12 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('index', [ArticlesController::class, 'index']);
     Route::get('article/filters', [ArticlesController::class, 'getFilters']);
 
-    Route::group(['middleware' => ['jwt.verify']], function() {
+//    Route::group(['middleware' => ['jwt.verify']], function() {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('get_user', [AuthController::class, 'get_user']);
         Route::put('updateProfile', [AuthController::class, 'updateProfile']);
-        Route::post('saveUserPreferences', [ArticlesController::class, 'saveUserPreferences']);
-    });
+    Route::get('get/preferences', [ArticlesController::class, 'getUserPreferences']);
+    Route::post('saveUserPreferences', [ArticlesController::class, 'saveUserPreferences']);
+//    });
 });
 

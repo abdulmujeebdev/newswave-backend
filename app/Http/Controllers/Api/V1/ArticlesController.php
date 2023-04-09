@@ -13,6 +13,7 @@ class ArticlesController extends Controller
      * @var ArticleInterface
      */
     protected $articleInterface;
+
     public function __construct(ArticleInterface $articleInterface)
     {
         $this->articleInterface = $articleInterface;
@@ -27,6 +28,7 @@ class ArticlesController extends Controller
             'data' => $data,
         ], Response::HTTP_OK);
     }
+
     public function getFilters()
     {
         $data = $this->articleInterface->getFilters();
@@ -40,7 +42,14 @@ class ArticlesController extends Controller
 
         return response()->json([
             'success' => true,
-            'authors' => 'Preferences Updated Successfully',
+            'message' => 'Preferences Updated Successfully',
         ], Response::HTTP_OK);
+    }
+
+    public function getUserPreferences(Request $request)
+    {
+        $data = $this->articleInterface->getUserPreferences($request);
+
+        return response()->json($data, Response::HTTP_OK);
     }
 }
