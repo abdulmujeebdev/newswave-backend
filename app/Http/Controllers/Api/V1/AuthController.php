@@ -69,7 +69,7 @@ class AuthController extends Controller
     }
 
 
-    public function logout(LogoutRequest $request)
+    public function logout(Request $request)
     {
         //Request is validated, do logout
         try {

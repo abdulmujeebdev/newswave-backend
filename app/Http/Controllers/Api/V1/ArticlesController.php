@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use Illuminate\Support\Facades\Log;
+use JWTAuth;
 use App\Interfaces\ArticleInterface;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
@@ -29,9 +31,9 @@ class ArticlesController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getFilters()
+    public function getFilters(Request $request)
     {
-        $data = $this->articleInterface->getFilters();
+        $data = $this->articleInterface->getFilters($request);
 
         return response()->json($data, Response::HTTP_OK);
     }

@@ -8,11 +8,10 @@ use App\Models\Article;
 use App\Models\ArticleAuthor;
 use App\Models\ArticleCategory;
 use App\Models\ArticleSource;
-use App\Models\User;
+use JWTAuth;
 use App\Models\UserAuthors;
 use App\Models\UserCategories;
 use App\Models\UserSources;
-use Illuminate\Http\Request;
 
 class ArticleRepository implements ArticleInterface {
     public function getArticles($request) {
@@ -20,12 +19,12 @@ class ArticleRepository implements ArticleInterface {
         $per_page = $request->per_page;
         $user = request()->user();
 
-        if (1==1 && @$request->is_user_preference == 'true') {
-            $authors = UserAuthors::where('user_id', 1)
+        if ($user && @$request->is_user_preference == 'true') {
+            $authors = UserAuthors::where('user_id', $user->id)
                 ->pluck('author_id')->toArray();
-            $sources = UserSources::where('user_id',  1)
+            $sources = UserSources::where('user_id',  $user->id)
                 ->pluck('source_id')->toArray();
-            $categories = UserCategories::where('user_id',  1)
+            $categories = UserCategories::where('user_id',  $user->id)
                 ->pluck('category_id')->toArray();
         } else {
             $authors = ArticleHelper::splitString($request->authors);
@@ -63,11 +62,21 @@ class ArticleRepository implements ArticleInterface {
         return $data;
     }
 
-    public function getFilters() {
+    public function getFilters($request) {
         $data = [];
-        $data['authors'] = ArticleAuthor::all();
-        $data['sources'] = ArticleSource::all();
-        $data['categories'] = ArticleCategory::all();
+        $user = request()->user();
+
+        $data['authors'] = ArticleAuthor::with(['userAuthors' => function($q) use ($user) {
+            $q->where('user_id', @$user->id);
+        }])->get();
+
+        $data['sources'] = ArticleSource::with(['userSources' => function($q) use ($user) {
+            $q->where('user_id', @$user->id);
+        }])->get();
+
+        $data['categories'] = ArticleCategory::with(['userCategories' => function($q) use ($user) {
+            $q->where('user_id', @$user->id);
+        }])->get();
 
         return $data;
     }
@@ -85,8 +94,8 @@ class ArticleRepository implements ArticleInterface {
         $sources = array_filter($request->sources, function($value) {
             return !empty($value);
         });
-//        $user = request()->user();
-        $user = User::find(1);
+
+        $user = request()->user();
 
         $user->authors()->sync(array_keys($authors));
         $user->sources()->sync(array_keys($sources));
@@ -96,15 +105,36 @@ class ArticleRepository implements ArticleInterface {
     }
 
     public function getUserPreferences($request) {
-        //        $user = request()->user();
-        $authors = UserAuthors::where('user_id', 1)->pluck('author_id')->toArray();
-        $categories = UserCategories::where('user_id', 1)->pluck('category_id')->toArray();
-        $sources = UserSources::where('user_id', 1)->pluck('source_id')->toArray();
+        $modifiedAuthors = [];
+        $modifiedCategories = [];
+        $modifiedSources = [];
+        $user = request()->user();
+        $authors = UserAuthors::where('user_id', $user->id)->pluck('author_id')->toArray();
+        $categories = UserCategories::where('user_id', $user->id)->pluck('category_id')->toArray();
+        $sources = UserSources::where('user_id', $user->id)->pluck('source_id')->toArray();
+
+        if($authors) {
+            foreach($authors as $author) {
+                @$modifiedAuthors[$author] = true;
+            }
+        }
+
+        if($categories) {
+            foreach($categories as $category) {
+                @$modifiedCategories[$category] = true;
+            }
+        }
+
+        if($sources) {
+            foreach($sources as $source) {
+                @$modifiedSources[$source] = true;
+            }
+        }
 
         $data = [
-            'authors' => $authors,
-            'categories' => $categories,
-            'sources' => $sources,
+            'authors' => $modifiedAuthors,
+            'categories' => $modifiedCategories,
+            'sources' => $modifiedSources,
         ];
 
         return $data;
