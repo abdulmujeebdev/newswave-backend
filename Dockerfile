@@ -1,11 +1,17 @@
-# Use the official PHP image as the base image
+# Use the official PHP base image
 FROM php:8.1
-
-# Install required PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
 
 # Set the working directory
 WORKDIR /var/www/html
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
+    git \
+
+# Install required PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql
 
 # Copy the entire Laravel backend project to the container
 COPY . .
